@@ -111,6 +111,64 @@ public class Solution {
         return null;
     }
 
+    @SuppressWarnings("Duplicates")
+    public Solution[] loadAllByUserId(int userId) {
+        try (Connection connection = ConnectionManager.getConnection()) {
+            ArrayList<Solution> solutions = new ArrayList<Solution>();
+            String sql = "SELECT * FROM solution where users_id=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Solution loadedSolution = new Solution();
+                loadedSolution.id = resultSet.getInt("id");
+                loadedSolution.created = resultSet.getString("created");
+                loadedSolution.updated = resultSet.getString("updated");
+                loadedSolution.description = resultSet.getString("description");
+                loadedSolution.exercise_id = resultSet.getInt("exercise_id");
+                loadedSolution.users_id = resultSet.getInt("users_id");
+                solutions.add(loadedSolution);
+            }
+            Solution[] solArray = new Solution[solutions.size()];
+            solArray = solutions.toArray(solArray);
+
+            return solArray;
+        } catch (Exception e) {
+            System.err.println("Failed to load all solutions by user ID.");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @SuppressWarnings("Duplicates")
+    public Solution[] loadAllByExerciseId(int exerciseId) {
+        try (Connection connection = ConnectionManager.getConnection()) {
+            ArrayList<Solution> solutions = new ArrayList<Solution>();
+            String sql = "SELECT * FROM solution where exercise_id=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, exerciseId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Solution loadedSolution = new Solution();
+                loadedSolution.id = resultSet.getInt("id");
+                loadedSolution.created = resultSet.getString("created");
+                loadedSolution.updated = resultSet.getString("updated");
+                loadedSolution.description = resultSet.getString("description");
+                loadedSolution.exercise_id = resultSet.getInt("exercise_id");
+                loadedSolution.users_id = resultSet.getInt("users_id");
+                solutions.add(loadedSolution);
+            }
+            Solution[] solArray = new Solution[solutions.size()];
+            solArray = solutions.toArray(solArray);
+
+            return solArray;
+        } catch (Exception e) {
+            System.err.println("Failed to load all solutions by exercise ID.");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void delete() {
         try (Connection connection = ConnectionManager.getConnection()) {
             if (this.id != 0) {

@@ -1,0 +1,1 @@
+mysqldump -h localhost -u root -p programming_school > dump20II2019.sql

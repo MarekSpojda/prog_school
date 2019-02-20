@@ -16,6 +16,7 @@ public class User {
     private String username;
     private String password;
     private String email;
+    private int user_group_id;
 
     public User() {
     }
@@ -23,7 +24,7 @@ public class User {
     public User(int id, String username, String password, String email) {
         this.id = id;
         this.username = username;
-        this.password = password;
+        setPassword(password);
         this.email = email;
     }
 
@@ -44,10 +45,12 @@ public class User {
                 loadedUser.username = resultSet.getString("username");
                 loadedUser.password = resultSet.getString("password");
                 loadedUser.email = resultSet.getString("email");
+                loadedUser.user_group_id = resultSet.getInt("user_group_id");
                 users.add(loadedUser);
             }
             User[] uArray = new User[users.size()];
             uArray = users.toArray(uArray);
+            return uArray;
         } catch (Exception e) {
             System.err.println("Failed to load all users. Please check if result set is correct.");
             e.printStackTrace();
@@ -69,6 +72,7 @@ public class User {
                 loadedUser.username = resultSet.getString("username");
                 loadedUser.password = resultSet.getString("password");
                 loadedUser.email = resultSet.getString("email");
+                loadedUser.user_group_id = resultSet.getInt("user_group_id");
                 return loadedUser;
             }
             return null;
@@ -76,6 +80,33 @@ public class User {
             System.err.println("Failed to load user. Please check if result set is correct.");
             e.printStackTrace();
         }
+        return null;
+    }
+
+    @SuppressWarnings("Duplicates")
+    public User[] loadAllByGroupId(int groupId) {
+        try (Connection connection = ConnectionManager.getConnection()) {
+            ArrayList<User> users = new ArrayList<User>();
+            String sql = "SELECT * FROM users where user_group_id=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, groupId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                User loadedUser = new User();
+                loadedUser.id = resultSet.getInt("id");
+                loadedUser.username = resultSet.getString("username");
+                loadedUser.password = resultSet.getString("password");
+                loadedUser.email = resultSet.getString("email");
+                loadedUser.user_group_id = resultSet.getInt("user_group_id");
+                users.add(loadedUser);
+            }
+            User[] uArray = new User[users.size()];
+            uArray = users.toArray(uArray);
+        } catch (Exception e) {
+            System.err.println("Failed to load all users by group ID. Please check if result set is correct.");
+            e.printStackTrace();
+        }
+
         return null;
     }
 
@@ -112,13 +143,14 @@ public class User {
         try (Connection connection = ConnectionManager.getConnection()) {
             if (this.id == 0) {
                 String insertUserQuery =
-                        "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+                        "INSERT INTO users (username, email, password,user_group_id) VALUES (?, ?, ?,?)";
                 PreparedStatement ps =
                         connection.prepareStatement(insertUserQuery, PreparedStatement.RETURN_GENERATED_KEYS);
                 int idx = 0; // because of pre incrementation
                 ps.setString(++idx, this.username);
                 ps.setString(++idx, this.email);
                 ps.setString(++idx, this.password);
+                ps.setInt(++idx, this.user_group_id);
                 ps.execute();
                 System.out.println("User saved into database");
 
@@ -127,12 +159,13 @@ public class User {
                     this.id = rs.getInt(1);
                 }
             } else {
-                String sql = "UPDATE users SET username=?, email=?, password=? where id = ?";
+                String sql = "UPDATE users SET username=?, email=?, password=?, user_group_id=? where id = ?";
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setString(1, this.username);
                 preparedStatement.setString(2, this.email);
                 preparedStatement.setString(3, this.password);
-                preparedStatement.setInt(4, this.id);
+                preparedStatement.setInt(4, this.user_group_id);
+                preparedStatement.setInt(5, this.id);
                 preparedStatement.executeUpdate();
             }
         } catch (Exception e) {
@@ -169,11 +202,7 @@ public class User {
     }
 
     public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        return this.id;
     }
 
     public String getUsername() {
@@ -198,5 +227,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getUser_group_id() {
+        return this.user_group_id;
+    }
+
+    public void setUser_group_id(int user_group_id) {
+        this.user_group_id = user_group_id;
     }
 }

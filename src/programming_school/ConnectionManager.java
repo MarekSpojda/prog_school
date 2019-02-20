@@ -8,7 +8,7 @@ public final class ConnectionManager {
     private static final String PROGRAMMING_SCHOOL = "programming_school";
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "coderslab"; // unsafe :(
-    private static final String DB_PORT = "3309";
+    private static final String DB_PORT = "3306";
 
     private ConnectionManager() {
     } // just static methods
@@ -17,12 +17,16 @@ public final class ConnectionManager {
      * one place to connect with method
      */
     public static Connection getConnection() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:" + DB_PORT + "/" + PROGRAMMING_SCHOOL + "?useSSL=false&characterEncoding=utf8",
-                DB_USERNAME,
-                DB_PASSWORD)) {
+        try {
+            Connection connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:" + DB_PORT + "/" + PROGRAMMING_SCHOOL + "?useSSL=false&characterEncoding=utf8",
+                    DB_USERNAME,
+                    DB_PASSWORD);//) {
 
             return connection;
+        } catch (Exception e) {
+            System.out.println("Unable to establish connection.");
         }
+        return null;
     }
 }
