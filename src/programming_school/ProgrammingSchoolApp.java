@@ -30,6 +30,8 @@ public class ProgrammingSchoolApp {
                 choiceProgram();
                 break;
             case "b":
+                new ManageTasks().runManageTasks();
+                choiceProgram();
                 break;
             case "c":
                 break;

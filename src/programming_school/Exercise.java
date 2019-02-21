@@ -11,6 +11,15 @@ public class Exercise {
     private String title;
     private String description;
 
+    Exercise() {
+    }
+
+    Exercise(int id, String title, String description) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+    }
+
     public int getId() {
         return this.id;
     }
@@ -32,7 +41,7 @@ public class Exercise {
     }
 
     @SuppressWarnings("Duplicates")
-    public Exercise[] loadAll() throws SQLException {
+    public Exercise[] loadAll() {
         try (Connection connection = ConnectionManager.getConnection()) {
             ArrayList<Exercise> exercises = new ArrayList<Exercise>();
             String sql = "SELECT * FROM exercise";
@@ -112,6 +121,38 @@ public class Exercise {
 
         } catch (SQLException e) {
             System.err.println("Can't create exercise.");
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("Duplicates")
+    public void update() {
+        try (Connection connection = ConnectionManager.getConnection()) {
+            if (this.id == 0) {
+                String insertExerciseQuery =
+                        "INSERT INTO exercise (title, description) VALUES (?,?)";
+                PreparedStatement ps =
+                        connection.prepareStatement(insertExerciseQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+                int idx = 0; // because of pre incrementation
+                ps.setString(++idx, this.title);
+                ps.setString(++idx, this.description);
+                ps.execute();
+                System.out.println("Exercise saved into database");
+
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    this.id = rs.getInt(1);
+                }
+            } else {
+                String sql = "UPDATE exercise SET title=?, description=? where id = ?";
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setString(1, this.title);
+                preparedStatement.setString(2, this.description);
+                preparedStatement.setInt(3, this.id);
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to update exercise record.");
             e.printStackTrace();
         }
     }
