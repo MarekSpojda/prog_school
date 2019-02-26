@@ -14,6 +14,24 @@ public class Solution {
     private int exercise_id;
     private int users_id;
 
+    public Solution() {
+    }
+
+    public Solution(String created, String updated, int exercise_id, int users_id) {
+        this.created = created;
+        this.updated = updated;
+        this.exercise_id = exercise_id;
+        this.users_id = users_id;
+    }
+
+    public Solution(String created, String updated, String description, int exercise_id, int users_id) {
+        this.created = created;
+        this.updated = updated;
+        this.description = description;
+        this.exercise_id = exercise_id;
+        this.users_id = users_id;
+    }
+
     public int getId() {
         return this.id;
     }

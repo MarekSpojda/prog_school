@@ -26,6 +26,7 @@ public final class ConnectionManager {
             return connection;
         } catch (Exception e) {
             System.out.println("Unable to establish connection.");
+            e.printStackTrace();
         }
         return null;
     }

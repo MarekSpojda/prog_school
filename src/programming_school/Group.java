@@ -10,6 +10,14 @@ public class Group {
     private int id;
     private String name;
 
+    public Group() {
+    }
+
+    public Group(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public int getId() {
         return this.id;
     }
@@ -22,7 +30,7 @@ public class Group {
         this.name = name;
     }
 
-    public Group[] loadAll() throws SQLException {
+    public Group[] loadAll() {
         try (Connection connection = ConnectionManager.getConnection()) {
             ArrayList<Group> groups = new ArrayList<Group>();
             String sql = "SELECT * FROM user_group";
@@ -31,7 +39,7 @@ public class Group {
             while (resultSet.next()) {
                 Group loadedGroup = new Group();
                 loadedGroup.id = resultSet.getInt("id");
-                loadedGroup.name = resultSet.getString("username");
+                loadedGroup.name = resultSet.getString("name");
                 groups.add(loadedGroup);
             }
             Group[] gArray = new Group[groups.size()];
@@ -80,6 +88,7 @@ public class Group {
         }
     }
 
+    @SuppressWarnings("Duplicates")
     public void saveToDb() {
         try (Connection connection = ConnectionManager.getConnection()) {
             String insertGroupQuery =
@@ -98,6 +107,36 @@ public class Group {
 
         } catch (SQLException e) {
             System.err.println("Can't create group.");
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("Duplicates")
+    public void update() {
+        try (Connection connection = ConnectionManager.getConnection()) {
+            if (this.id == 0) {
+                String insertGroupQuery =
+                        "INSERT INTO user_group (name) VALUES (?)";
+                PreparedStatement ps =
+                        connection.prepareStatement(insertGroupQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+                int idx = 0; // because of pre incrementation
+                ps.setString(++idx, this.name);
+                ps.execute();
+                System.out.println("Group saved into database");
+
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    this.id = rs.getInt(1);
+                }
+            } else {
+                String sql = "UPDATE user_group SET name=? where id = ?";
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setString(1, this.name);
+                preparedStatement.setInt(2, this.id);
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to update group record.");
             e.printStackTrace();
         }
     }

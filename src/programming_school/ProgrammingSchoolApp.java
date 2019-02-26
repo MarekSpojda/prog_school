@@ -18,7 +18,7 @@ public class ProgrammingSchoolApp {
         System.out.println("Wybierz jedną z opcji:\n" +
                 "a – zarządzanie użytkownikami\n" +
                 "b – zarządzanie zadaniami\n" +
-                "c – usunięcie grupami\n" +
+                "c – zarządzanie grupami\n" +
                 "d – przypisywanie zadań\n" +
                 "quit – zakończenie programu głownego");
         Scanner scanner = new Scanner(System.in);
@@ -30,12 +30,16 @@ public class ProgrammingSchoolApp {
                 choiceProgram();
                 break;
             case "b":
-                new ManageTasks().runManageTasks();
+                new ManageExercises().runManageTasks();
                 choiceProgram();
                 break;
             case "c":
+                new ManageGroups().runManageGroups();
+                choiceProgram();
                 break;
             case "d":
+                new AssignExercise().runAssignExercise();
+                choiceProgram();
                 break;
             case "quit":
                 break;
